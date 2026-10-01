@@ -1,10 +1,26 @@
-const summaryCards = [
-  { id: 'total-spent', label: 'Total Spent', value: '₦0.00' },
-  { id: 'this-month', label: 'This Month', value: '₦0.00' },
-  { id: 'transactions', label: 'Transactions', value: '0' },
-] as const
+import { useState } from 'react'
+import ExpenseForm from './ExpenseForm'
+import type { Expense } from '../types/expense'
 
-function SummaryIcon({ name }: { name: (typeof summaryCards)[number]['id'] }) {
+type SummaryCardId = 'total-spent' | 'this-month' | 'transactions'
+
+const summaryCardLabels: Record<SummaryCardId, string> = {
+  'total-spent': 'Total Spent',
+  'this-month': 'This Month',
+  transactions: 'Transactions',
+}
+
+const nairaFormatter = new Intl.NumberFormat('en-NG', {
+  style: 'currency',
+  currency: 'NGN',
+})
+
+interface DashboardProps {
+  expenses: Expense[]
+  onAddExpense: (expense: Expense) => void
+}
+
+function SummaryIcon({ name }: { name: SummaryCardId }) {
   if (name === 'transactions') {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
@@ -20,7 +36,21 @@ function SummaryIcon({ name }: { name: (typeof summaryCards)[number]['id'] }) {
   )
 }
 
-function Dashboard() {
+function Dashboard({ expenses, onAddExpense }: DashboardProps) {
+  const [isFormOpen, setIsFormOpen] = useState(false)
+
+  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
+  const monthPrefix = new Date().toISOString().slice(0, 7)
+  const thisMonth = expenses
+    .filter((expense) => expense.date.startsWith(monthPrefix))
+    .reduce((total, expense) => total + expense.amount, 0)
+
+  const summaryCards: { id: SummaryCardId; value: string }[] = [
+    { id: 'total-spent', value: nairaFormatter.format(totalSpent) },
+    { id: 'this-month', value: nairaFormatter.format(thisMonth) },
+    { id: 'transactions', value: String(expenses.length) },
+  ]
+
   return (
     <div className="dashboard">
       <header className="dashboard__header">
@@ -28,13 +58,26 @@ function Dashboard() {
           <h1 className="dashboard__title">Expense Tracker</h1>
           <p className="dashboard__subtitle">Track and manage your spending</p>
         </div>
-        <button type="button" className="button button--primary">
-          <span className="button__icon" aria-hidden="true">
-            +
-          </span>
-          Add Expense
-        </button>
+        {!isFormOpen && (
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={() => setIsFormOpen(true)}
+          >
+            <span className="button__icon" aria-hidden="true">
+              +
+            </span>
+            Add Expense
+          </button>
+        )}
       </header>
+
+      {isFormOpen && (
+        <ExpenseForm
+          onAddExpense={onAddExpense}
+          onCancel={() => setIsFormOpen(false)}
+        />
+      )}
 
       <section className="summary" aria-labelledby="summary-heading">
         <h2 id="summary-heading" className="sr-only">
@@ -46,7 +89,7 @@ function Dashboard() {
             <span className="summary__icon">
               <SummaryIcon name={card.id} />
             </span>
-            <p className="summary__label">{card.label}</p>
+            <p className="summary__label">{summaryCardLabels[card.id]}</p>
             <p className="summary__value">{card.value}</p>
           </article>
         ))}
@@ -59,18 +102,38 @@ function Dashboard() {
           </h2>
         </div>
 
-        <div className="empty-state">
-          <span className="empty-state__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" focusable="false">
-              <path d="M3.5 8.5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8Z" />
-              <path d="M3.5 10.5h17M16 14.5h1.5" />
-            </svg>
-          </span>
-          <h3 className="empty-state__title">No expenses yet</h3>
-          <p className="empty-state__text">
-            Add your first expense to start tracking your spending.
-          </p>
-        </div>
+        {expenses.length === 0 ? (
+          <div className="empty-state">
+            <span className="empty-state__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                <path d="M3.5 8.5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8Z" />
+                <path d="M3.5 10.5h17M16 14.5h1.5" />
+              </svg>
+            </span>
+            <h3 className="empty-state__title">No expenses yet</h3>
+            <p className="empty-state__text">
+              Add your first expense to start tracking your spending.
+            </p>
+          </div>
+        ) : (
+          <ul className="expense-list">
+            {expenses.map((expense) => (
+              <li key={expense.id} className="expense-list__item">
+                <div className="expense-list__details">
+                  <p className="expense-list__title">{expense.title}</p>
+                  <p className="expense-list__meta">
+                    <span className="expense-list__category">{expense.category}</span>
+                    <span aria-hidden="true">·</span>
+                    <time dateTime={expense.date}>{expense.date}</time>
+                  </p>
+                </div>
+                <p className="expense-list__amount">
+                  {nairaFormatter.format(expense.amount)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )

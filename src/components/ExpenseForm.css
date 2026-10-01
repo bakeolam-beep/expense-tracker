@@ -1,0 +1,144 @@
+/* Add expense form */
+
+.expense-form__body {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.field__control {
+  width: 100%;
+  padding: 9px 12px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.field__control::placeholder {
+  color: var(--text-muted);
+}
+
+.field__control:hover {
+  border-color: var(--accent-border);
+}
+
+.field__control:focus-visible {
+  outline: 2px solid transparent;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+.field__control[aria-invalid='true'] {
+  border-color: #f04438;
+}
+
+.field__control[aria-invalid='true']:focus-visible {
+  box-shadow: 0 0 0 3px rgba(240, 68, 56, 0.25);
+}
+
+select.field__control {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+
+.field__affix {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field__affix-symbol {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  pointer-events: none;
+}
+
+.field__control--affixed {
+  padding-left: 30px;
+}
+
+.field__error {
+  color: #f04438;
+  font-size: 0.8125rem;
+}
+
+.expense-form__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Secondary button shares the base .button rules from App.css */
+
+.button--secondary {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.button--secondary:hover {
+  border-color: var(--accent-border);
+  background-color: var(--surface-muted);
+}
+
+.button--secondary:active {
+  background-color: var(--surface-muted);
+}
+
+@media (max-width: 520px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-form__actions {
+    flex-direction: column-reverse;
+  }
+
+  .expense-form__actions .button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field__control {
+    transition: none;
+  }
+}
