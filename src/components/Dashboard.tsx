@@ -185,7 +185,7 @@ function Dashboard({
               </div>
             ) : (
               <>
-                <p className="results-count">
+                <p className="results-count" role="status" aria-live="polite">
                   {hasActiveFilters
                     ? `Showing ${visibleExpenses.length} of ${expenses.length} expenses`
                     : `${expenses.length} ${expenses.length === 1 ? 'expense' : 'expenses'}`}

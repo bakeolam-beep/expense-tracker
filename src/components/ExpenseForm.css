@@ -28,6 +28,7 @@
 
 .field__control {
   width: 100%;
+  min-width: 0;
   padding: 9px 12px;
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -56,11 +57,12 @@
 }
 
 .field__control[aria-invalid='true'] {
-  border-color: #f04438;
+  border-color: var(--danger);
 }
 
 .field__control[aria-invalid='true']:focus-visible {
-  box-shadow: 0 0 0 3px rgba(240, 68, 56, 0.25);
+  border-color: var(--danger);
+  box-shadow: var(--danger-ring);
 }
 
 select.field__control {
@@ -96,7 +98,7 @@ select.field__control {
 }
 
 .field__error {
-  color: #f04438;
+  color: var(--danger);
   font-size: 0.8125rem;
 }
 

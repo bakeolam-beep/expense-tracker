@@ -112,6 +112,19 @@
 
 /* Responsive */
 
+/* Below this width the four-across controls get too narrow for their option
+   labels, so the search takes a full row and the selects pair up. */
+
+@media (max-width: 900px) {
+  .filters__controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters__search {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 860px) {
   .filters {
     padding: 14px 0;
@@ -125,11 +138,5 @@
 @media (max-width: 620px) {
   .filters__controls {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .field__control {
-    transition: none;
   }
 }
