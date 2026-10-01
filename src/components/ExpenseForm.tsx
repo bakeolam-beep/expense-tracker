@@ -1,17 +1,8 @@
 import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Expense, ExpenseCategory } from '../types/expense'
+import { expenseCategories as categories } from '../types/expense'
 import './ExpenseForm.css'
-
-const categories: readonly ExpenseCategory[] = [
-  'Food',
-  'Transport',
-  'Bills',
-  'Shopping',
-  'Entertainment',
-  'Health',
-  'Other',
-]
 
 interface ExpenseFormProps {
   /** Expense being edited. When null the form runs in create mode. */

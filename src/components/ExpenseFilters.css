@@ -1,0 +1,135 @@
+/* Search, filter and sort toolbar */
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.filters__controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.filters__search,
+.filters__select {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
+.filters__control {
+  min-width: 0;
+}
+
+.filters__control--search {
+  padding-left: 36px;
+}
+
+.filters__control--search::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+.filters__search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filters__search-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.filters__clear {
+  align-self: flex-start;
+  padding-left: 0;
+}
+
+/* Filtered result state */
+
+.no-results {
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.no-results__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.no-results__icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.no-results__title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.no-results__text {
+  margin-top: 4px;
+  max-width: 34ch;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.no-results__action {
+  margin-top: 16px;
+}
+
+.results-count {
+  padding-top: 16px;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Responsive */
+
+@media (max-width: 860px) {
+  .filters {
+    padding: 14px 0;
+  }
+
+  .no-results {
+    padding: 40px 16px;
+  }
+}
+
+@media (max-width: 620px) {
+  .filters__controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field__control {
+    transition: none;
+  }
+}

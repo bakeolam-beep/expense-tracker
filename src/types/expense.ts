@@ -14,3 +14,13 @@ export type ExpenseCategory =
   | "Entertainment"
   | "Health"
   | "Other";
+
+export const expenseCategories: readonly ExpenseCategory[] = [
+  "Food",
+  "Transport",
+  "Bills",
+  "Shopping",
+  "Entertainment",
+  "Health",
+  "Other",
+];

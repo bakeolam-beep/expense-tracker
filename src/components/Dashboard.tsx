@@ -1,8 +1,16 @@
 import { useMemo, useState } from 'react'
 import ExpenseForm from './ExpenseForm'
+import ExpenseFilters from './ExpenseFilters'
 import type { Expense } from '../types/expense'
 import { formatCurrency } from '../utils/currency'
 import { summariseExpenses } from '../utils/expenseSummary'
+import {
+  defaultExpenseQuery,
+  filterAndSortExpenses,
+  getAvailableMonths,
+  isFiltered,
+} from '../utils/expenseQuery'
+import type { ExpenseQuery } from '../utils/expenseQuery'
 
 type SummaryCardId = 'total-spent' | 'this-month' | 'transactions'
 
@@ -50,6 +58,7 @@ function Dashboard({
   onDeleteExpense,
 }: DashboardProps) {
   const [isCreating, setIsCreating] = useState(false)
+  const [query, setQuery] = useState<ExpenseQuery>(defaultExpenseQuery)
 
   const isFormOpen = isCreating || editingExpense !== null
 
@@ -59,6 +68,12 @@ function Dashboard({
   }
 
   const summary = useMemo(() => summariseExpenses(expenses), [expenses])
+  const months = useMemo(() => getAvailableMonths(expenses), [expenses])
+  const visibleExpenses = useMemo(
+    () => filterAndSortExpenses(expenses, query),
+    [expenses, query],
+  )
+  const hasActiveFilters = isFiltered(query)
 
   const summaryCards: { id: SummaryCardId; value: string }[] = [
     { id: 'total-spent', value: formatCurrency(summary.totalSpent) },
@@ -133,48 +148,86 @@ function Dashboard({
             </p>
           </div>
         ) : (
-          <ul className="expense-list">
-            {expenses.map((expense) => (
-              <li key={expense.id} className="expense-list__item">
-                <div className="expense-list__main">
-                  <p className="expense-list__title">{expense.title}</p>
-                  <p className="expense-list__meta">
-                    <span className="expense-list__category">{expense.category}</span>
-                    <span aria-hidden="true">·</span>
-                    <time dateTime={expense.date}>
-                      {dateFormatter.format(new Date(`${expense.date}T00:00:00`))}
-                    </time>
-                  </p>
-                </div>
+          <>
+            <ExpenseFilters
+              query={query}
+              months={months}
+              onQueryChange={setQuery}
+              onClear={() => setQuery(defaultExpenseQuery)}
+              showClear={hasActiveFilters}
+            />
 
-                <p className="expense-list__amount">
-                  {formatCurrency(expense.amount)}
+            {visibleExpenses.length === 0 ? (
+              <div className="no-results">
+                <span className="no-results__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                    <circle cx="11" cy="11" r="6.5" />
+                    <path d="M16 16l4.5 4.5M8.75 11h4.5" />
+                  </svg>
+                </span>
+                <h3 className="no-results__title">No matching expenses</h3>
+                <p className="no-results__text">
+                  Try adjusting your search or filters.
+                </p>
+                <button
+                  type="button"
+                  className="button button--secondary no-results__action"
+                  onClick={() => setQuery(defaultExpenseQuery)}
+                >
+                  Clear Filters
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="results-count">
+                  {hasActiveFilters
+                    ? `Showing ${visibleExpenses.length} of ${expenses.length} expenses`
+                    : `${expenses.length} ${expenses.length === 1 ? 'expense' : 'expenses'}`}
                 </p>
 
-                <div className="expense-list__actions">
-                  <button
-                    type="button"
-                    className="button button--quiet"
-                    onClick={() => {
-                      setIsCreating(false)
-                      onEditingExpenseChange(expense)
-                    }}
-                    aria-label={`Edit ${expense.title}`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="button button--quiet button--danger"
-                    onClick={() => onDeleteExpense(expense.id)}
-                    aria-label={`Delete ${expense.title}`}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                <ul className="expense-list">
+                  {visibleExpenses.map((expense) => (
+                    <li key={expense.id} className="expense-list__item">
+                      <div className="expense-list__main">
+                        <p className="expense-list__title">{expense.title}</p>
+                        <p className="expense-list__meta">
+                          <span className="expense-list__category">{expense.category}</span>
+                          <span aria-hidden="true">·</span>
+                          <time dateTime={expense.date}>
+                            {dateFormatter.format(new Date(`${expense.date}T00:00:00`))}
+                          </time>
+                        </p>
+                      </div>
+
+                      <p className="expense-list__amount">{formatCurrency(expense.amount)}</p>
+
+                      <div className="expense-list__actions">
+                        <button
+                          type="button"
+                          className="button button--quiet"
+                          onClick={() => {
+                            setIsCreating(false)
+                            onEditingExpenseChange(expense)
+                          }}
+                          aria-label={`Edit ${expense.title}`}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="button button--quiet button--danger"
+                          onClick={() => onDeleteExpense(expense.id)}
+                          aria-label={`Delete ${expense.title}`}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </>
         )}
       </section>
     </div>
