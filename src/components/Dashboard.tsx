@@ -56,7 +56,7 @@ function Dashboard({
   function closeForm() {
     setIsCreating(false)
     onEditingExpenseChange(null)
-}
+  }
 
   const summary = useMemo(() => summariseExpenses(expenses), [expenses])
 
