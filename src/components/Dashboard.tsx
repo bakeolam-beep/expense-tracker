@@ -82,6 +82,8 @@ function Dashboard({
             <button
               type="button"
               className="button button--quiet"
+              // Home returns the user to the unfiltered dashboard, so the
+              // control always does something visible.
               onClick={() => setQuery(defaultExpenseQuery)}
             >
               <span className="button__icon" aria-hidden="true">
