@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import ExpenseForm from './ExpenseForm'
 import ExpenseFilters from './ExpenseFilters'
 import CategoryBreakdown from './CategoryBreakdown'
 import type { Expense } from '../types/expense'
@@ -30,9 +29,8 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 
 interface DashboardProps {
   expenses: Expense[]
-  editingExpense: Expense | null
-  onEditingExpenseChange: (expense: Expense | null) => void
-  onSubmitExpense: (expense: Expense) => void
+  onAddExpense: () => void
+  onEditExpense: (expense: Expense) => void
   onDeleteExpense: (id: string) => void
 }
 
@@ -54,20 +52,11 @@ function SummaryIcon({ name }: { name: SummaryCardId }) {
 
 function Dashboard({
   expenses,
-  editingExpense,
-  onEditingExpenseChange,
-  onSubmitExpense,
+  onAddExpense,
+  onEditExpense,
   onDeleteExpense,
 }: DashboardProps) {
-  const [isCreating, setIsCreating] = useState(false)
   const [query, setQuery] = useState<ExpenseQuery>(defaultExpenseQuery)
-
-  const isFormOpen = isCreating || editingExpense !== null
-
-  function closeForm() {
-    setIsCreating(false)
-    onEditingExpenseChange(null)
-  }
 
   const summary = useMemo(() => summariseExpenses(expenses), [expenses])
   // Derived from the full expense list, so filters and sorting never change it.
@@ -89,31 +78,32 @@ function Dashboard({
     <div className="dashboard">
       <header className="dashboard__header">
         <div>
+          <nav className="app-nav" aria-label="Primary">
+            <button
+              type="button"
+              className="button button--quiet"
+              onClick={() => setQuery(defaultExpenseQuery)}
+            >
+              <span className="button__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                  <path d="M4 11.5 12 5l8 6.5" />
+                  <path d="M6.75 10.25V19h10.5v-8.75" />
+                </svg>
+              </span>
+              Dashboard
+            </button>
+          </nav>
+
           <h1 className="dashboard__title">Expense Tracker</h1>
           <p className="dashboard__subtitle">Track and manage your spending</p>
         </div>
-        {!isFormOpen && (
-          <button
-            type="button"
-            className="button button--primary"
-            onClick={() => setIsCreating(true)}
-          >
-            <span className="button__icon" aria-hidden="true">
-              +
-            </span>
-            Add Expense
-          </button>
-        )}
+        <button type="button" className="button button--primary" onClick={onAddExpense}>
+          <span className="button__icon" aria-hidden="true">
+            +
+          </span>
+          Add Expense
+        </button>
       </header>
-
-      {isFormOpen && (
-        <ExpenseForm
-          key={editingExpense?.id ?? 'create'}
-          expense={editingExpense}
-          onSubmitExpense={onSubmitExpense}
-          onCancel={closeForm}
-        />
-      )}
 
       <section className="summary" aria-labelledby="summary-heading">
         <h2 id="summary-heading" className="sr-only">
