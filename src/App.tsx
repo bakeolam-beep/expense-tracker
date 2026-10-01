@@ -28,7 +28,7 @@ function App() {
     <Dashboard
       expenses={expenses}
       editingExpense={editingExpense}
-      onStartEditing={setEditingExpense}
+      onEditingExpenseChange={setEditingExpense}
       onSubmitExpense={handleSubmitExpense}
       onDeleteExpense={handleDeleteExpense}
     />

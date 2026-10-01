@@ -15,9 +15,18 @@ const nairaFormatter = new Intl.NumberFormat('en-NG', {
   currency: 'NGN',
 })
 
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+
 interface DashboardProps {
   expenses: Expense[]
-  onAddExpense: (expense: Expense) => void
+  editingExpense: Expense | null
+  onEditingExpenseChange: (expense: Expense | null) => void
+  onSubmitExpense: (expense: Expense) => void
+  onDeleteExpense: (id: string) => void
 }
 
 function SummaryIcon({ name }: { name: SummaryCardId }) {
@@ -36,8 +45,21 @@ function SummaryIcon({ name }: { name: SummaryCardId }) {
   )
 }
 
-function Dashboard({ expenses, onAddExpense }: DashboardProps) {
-  const [isFormOpen, setIsFormOpen] = useState(false)
+function Dashboard({
+  expenses,
+  editingExpense,
+  onEditingExpenseChange,
+  onSubmitExpense,
+  onDeleteExpense,
+}: DashboardProps) {
+  const [isCreating, setIsCreating] = useState(false)
+
+  const isFormOpen = isCreating || editingExpense !== null
+
+  function closeForm() {
+    setIsCreating(false)
+    onEditingExpenseChange(null)
+  }
 
   const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
   const monthPrefix = new Date().toISOString().slice(0, 7)
@@ -62,7 +84,7 @@ function Dashboard({ expenses, onAddExpense }: DashboardProps) {
           <button
             type="button"
             className="button button--primary"
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => setIsCreating(true)}
           >
             <span className="button__icon" aria-hidden="true">
               +
@@ -74,8 +96,10 @@ function Dashboard({ expenses, onAddExpense }: DashboardProps) {
 
       {isFormOpen && (
         <ExpenseForm
-          onAddExpense={onAddExpense}
-          onCancel={() => setIsFormOpen(false)}
+          key={editingExpense?.id ?? 'create'}
+          expense={editingExpense}
+          onSubmitExpense={onSubmitExpense}
+          onCancel={closeForm}
         />
       )}
 
@@ -119,17 +143,42 @@ function Dashboard({ expenses, onAddExpense }: DashboardProps) {
           <ul className="expense-list">
             {expenses.map((expense) => (
               <li key={expense.id} className="expense-list__item">
-                <div className="expense-list__details">
+                <div className="expense-list__main">
                   <p className="expense-list__title">{expense.title}</p>
                   <p className="expense-list__meta">
                     <span className="expense-list__category">{expense.category}</span>
                     <span aria-hidden="true">·</span>
-                    <time dateTime={expense.date}>{expense.date}</time>
+                    <time dateTime={expense.date}>
+                      {dateFormatter.format(new Date(`${expense.date}T00:00:00`))}
+                    </time>
                   </p>
                 </div>
+
                 <p className="expense-list__amount">
                   {nairaFormatter.format(expense.amount)}
                 </p>
+
+                <div className="expense-list__actions">
+                  <button
+                    type="button"
+                    className="button button--quiet"
+                    onClick={() => {
+                      setIsCreating(false)
+                      onEditingExpenseChange(expense)
+                    }}
+                    aria-label={`Edit ${expense.title}`}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="button button--quiet button--danger"
+                    onClick={() => onDeleteExpense(expense.id)}
+                    aria-label={`Delete ${expense.title}`}
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
