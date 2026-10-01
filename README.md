@@ -1,75 +1,76 @@
-# React + TypeScript + Vite
+# Expense Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A single-page expense tracker built with React, TypeScript and Vite. Add, edit and
+delete expenses, review summary totals, narrow the list with search and filters,
+and see where the money actually goes. All data is stored in the browser, so there
+is no backend, no account and no network traffic.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Add, edit and delete expenses** with title, amount, category and date.
+- **Summary cards** for total spent, this month's spending and transaction count.
+- **Spending by category** — a proportional bar per category, ordered by spend.
+- **Search, category filter, month filter and sorting** for the expense list.
+- **Clear filters** to return the list to its unfiltered state.
+- **localStorage persistence** with defensive validation of anything read back.
+- **Light and dark colour schemes**, following the system preference.
+- **Responsive layout** from narrow phones up to wide desktops.
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+The dev server prints a local URL, usually `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Script              | Purpose                                  |
+| ------------------- | ---------------------------------------- |
+| `npm run dev`       | Start the dev server with hot reloading. |
+| `npm run build`     | Type-check and build for production.     |
+| `npm run preview`   | Serve the production build locally.      |
+| `npm run lint`      | Run ESLint over the project.             |
+
+## Project structure
 
 ```
+index.html                  Document shell
+src/
+  main.tsx                  Entry point
+  App.tsx                   Owns the expense state and persistence
+  App.css                   Layout shell, header, buttons, cards, panels
+  index.css                 Design tokens, resets, dark scheme
+  components/
+    Dashboard.tsx           Composes the page and derives summary and category data
+    ExpenseForm.tsx         Add and edit form with inline validation
+    ExpenseFilters.tsx      Search, category, month and sort controls
+    CategoryBreakdown.tsx   Proportional category spending bars
+  utils/
+    currency.ts             Centralised Naira formatting
+    storage.ts              Validated localStorage read and write
+    expenseQuery.ts         Search, filter, sort and month helpers
+    expenseSummary.ts       Summary card totals
+    expenseAnalytics.ts     Per-category totals and percentages
+  types/expense.ts          Expense shape and the single category list
+```
+
+## Design notes
+
+- `expenseCategories` in `src/types/expense.ts` is the only place categories are
+  defined. The form, the filter, the analytics and the storage validator all read
+  from it.
+- Every monetary value is rendered through `formatCurrency` in
+  `src/utils/currency.ts`, so amounts are always shown as Naira.
+- Dates are stored as `YYYY-MM-DD` strings and compared by reading the year and
+  month out of the string. No `new Date('YYYY-MM-DD')` parsing is used for
+  comparisons, which keeps month boundaries correct in every timezone.
+- The summary cards and the category breakdown are derived from the full expense
+  list. Search, filtering and sorting only affect which expenses the list shows,
+  never the stored data or the overall totals.
+- `loadExpenses` discards any stored entry that is not a valid expense, so
+  hand-edited or corrupted localStorage data cannot break the app. Storage
+  failures — blocked, unavailable or over quota — are swallowed and the app keeps
+  working in memory.
