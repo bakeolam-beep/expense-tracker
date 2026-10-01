@@ -100,13 +100,10 @@ function ExpenseForm({ expense, onSubmitExpense, onCancel }: ExpenseFormProps) {
   }
 
   return (
-    <section className="card panel expense-form" aria-labelledby="expense-form-heading">
-      <div className="panel__header">
-        <h2 id="expense-form-heading" className="panel__title">
-          {isEditMode ? 'Edit Expense' : 'Add Expense'}
-        </h2>
-      </div>
-
+    <section
+      className="card panel expense-form"
+      aria-label={isEditMode ? 'Edit expense' : 'Add expense'}
+    >
       <form className="expense-form__body" onSubmit={handleSubmit} noValidate>
         <div className="field">
           <label className="field__label" htmlFor="expense-title">

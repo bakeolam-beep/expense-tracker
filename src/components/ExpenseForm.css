@@ -1,7 +1,7 @@
-/* Add expense form */
+/* Add expense form. The view header owns the visible title, so the body
+   starts straight at the panel padding. */
 
 .expense-form__body {
-  padding-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;

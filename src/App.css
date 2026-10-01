@@ -80,6 +80,21 @@
   line-height: 1;
 }
 
+.button__icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* View navigation */
+
+.app-nav {
+  margin-bottom: 10px;
+}
+
 /* Cards */
 
 .card {

@@ -198,15 +198,12 @@ function Dashboard({
                       <p className="expense-list__amount">{formatCurrency(expense.amount)}</p>
 
                       <div className="expense-list__actions">
-                        <button
-                          type="button"
-                          className="button button--quiet"
-                          onClick={() => {
-                            setIsCreating(false)
-                            onEditingExpenseChange(expense)
-                          }}
-                          aria-label={`Edit ${expense.title}`}
-                        >
+                          <button
+                            type="button"
+                            className="button button--quiet"
+                            onClick={() => onEditExpense(expense)}
+                            aria-label={`Edit ${expense.title}`}
+                          >
                           Edit
                         </button>
                         <button
