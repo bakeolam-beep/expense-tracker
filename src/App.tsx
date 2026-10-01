@@ -1,11 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Dashboard from './components/Dashboard'
 import type { Expense } from './types/expense'
+import { loadExpenses, saveExpenses } from './utils/storage'
 import './App.css'
 
 function App() {
-  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [expenses, setExpenses] = useState<Expense[]>(loadExpenses)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
+
+  useEffect(() => {
+    saveExpenses(expenses)
+  }, [expenses])
 
   function handleSubmitExpense(expense: Expense) {
     if (editingExpense) {
