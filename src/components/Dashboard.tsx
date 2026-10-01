@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import ExpenseForm from './ExpenseForm'
 import ExpenseFilters from './ExpenseFilters'
+import CategoryBreakdown from './CategoryBreakdown'
 import type { Expense } from '../types/expense'
 import { formatCurrency } from '../utils/currency'
+import { getCategoryTotals } from '../utils/expenseAnalytics'
 import { summariseExpenses } from '../utils/expenseSummary'
 import {
   defaultExpenseQuery,
@@ -68,6 +70,8 @@ function Dashboard({
   }
 
   const summary = useMemo(() => summariseExpenses(expenses), [expenses])
+  // Derived from the full expense list, so filters and sorting never change it.
+  const categoryTotals = useMemo(() => getCategoryTotals(expenses), [expenses])
   const months = useMemo(() => getAvailableMonths(expenses), [expenses])
   const visibleExpenses = useMemo(
     () => filterAndSortExpenses(expenses, query),
@@ -126,6 +130,8 @@ function Dashboard({
           </article>
         ))}
       </section>
+
+      {expenses.length > 0 && <CategoryBreakdown totals={categoryTotals} />}
 
       <section className="card panel" aria-labelledby="recent-expenses-heading">
         <div className="panel__header">
