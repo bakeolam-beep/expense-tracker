@@ -101,6 +101,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .summary__icon {
@@ -139,6 +140,8 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* Recent expenses panel */

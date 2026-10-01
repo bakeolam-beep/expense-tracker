@@ -1,5 +1,4 @@
-import { useMemo } from 'react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import ExpenseForm from './ExpenseForm'
 import type { Expense } from '../types/expense'
 import { formatCurrency } from '../utils/currency'
@@ -57,18 +56,14 @@ function Dashboard({
   function closeForm() {
     setIsCreating(false)
     onEditingExpenseChange(null)
-  }
+}
 
-  const totalSpent = expenses.reduce((total, expense) => total + expense.amount, 0)
-  const monthPrefix = new Date().toISOString().slice(0, 7)
-  const thisMonth = expenses
-    .filter((expense) => expense.date.startsWith(monthPrefix))
-    .reduce((total, expense) => total + expense.amount, 0)
+  const summary = useMemo(() => summariseExpenses(expenses), [expenses])
 
   const summaryCards: { id: SummaryCardId; value: string }[] = [
-    { id: 'total-spent', value: nairaFormatter.format(totalSpent) },
-    { id: 'this-month', value: nairaFormatter.format(thisMonth) },
-    { id: 'transactions', value: String(expenses.length) },
+    { id: 'total-spent', value: formatCurrency(summary.totalSpent) },
+    { id: 'this-month', value: formatCurrency(summary.thisMonth) },
+    { id: 'transactions', value: String(summary.transactions) },
   ]
 
   return (
@@ -153,7 +148,7 @@ function Dashboard({
                 </div>
 
                 <p className="expense-list__amount">
-                  {nairaFormatter.format(expense.amount)}
+                  {formatCurrency(expense.amount)}
                 </p>
 
                 <div className="expense-list__actions">
