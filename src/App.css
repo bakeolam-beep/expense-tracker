@@ -53,20 +53,20 @@
 }
 
 .button--primary {
-  background-color: var(--accent);
-  border-color: var(--accent);
-  color: #ffffff;
+  background-color: var(--accent-solid);
+  border-color: var(--accent-solid);
+  color: var(--on-accent);
   box-shadow: var(--shadow-sm);
 }
 
 .button--primary:hover {
-  background-color: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background-color: var(--accent-solid-hover);
+  border-color: var(--accent-solid-hover);
 }
 
 .button--primary:active {
-  background-color: var(--accent-active);
-  border-color: var(--accent-active);
+  background-color: var(--accent-solid-active);
+  border-color: var(--accent-solid-active);
 }
 
 .button:focus-visible {

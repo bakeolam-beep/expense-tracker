@@ -24,7 +24,7 @@ function Dashboard() {
   return (
     <div className="dashboard">
       <header className="dashboard__header">
-        <div className="dashboard__heading">
+        <div>
           <h1 className="dashboard__title">Expense Tracker</h1>
           <p className="dashboard__subtitle">Track and manage your spending</p>
         </div>
