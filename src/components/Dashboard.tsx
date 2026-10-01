@@ -1,6 +1,9 @@
+import { useMemo } from 'react'
 import { useState } from 'react'
 import ExpenseForm from './ExpenseForm'
 import type { Expense } from '../types/expense'
+import { formatCurrency } from '../utils/currency'
+import { summariseExpenses } from '../utils/expenseSummary'
 
 type SummaryCardId = 'total-spent' | 'this-month' | 'transactions'
 
@@ -9,11 +12,6 @@ const summaryCardLabels: Record<SummaryCardId, string> = {
   'this-month': 'This Month',
   transactions: 'Transactions',
 }
-
-const nairaFormatter = new Intl.NumberFormat('en-NG', {
-  style: 'currency',
-  currency: 'NGN',
-})
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
