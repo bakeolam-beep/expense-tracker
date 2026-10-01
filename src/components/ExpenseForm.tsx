@@ -14,7 +14,9 @@ const categories: readonly ExpenseCategory[] = [
 ]
 
 interface ExpenseFormProps {
-  onAddExpense: (expense: Expense) => void
+  /** Expense being edited. When null the form runs in create mode. */
+  expense: Expense | null
+  onSubmitExpense: (expense: Expense) => void
   onCancel: () => void
 }
 
@@ -34,11 +36,13 @@ function createId(): string {
   return `expense-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
-function ExpenseForm({ onAddExpense, onCancel }: ExpenseFormProps) {
-  const [title, setTitle] = useState('')
-  const [amount, setAmount] = useState('')
-  const [category, setCategory] = useState<ExpenseCategory | ''>('')
-  const [date, setDate] = useState(today)
+function ExpenseForm({ expense, onSubmitExpense, onCancel }: ExpenseFormProps) {
+  const isEditMode = expense !== null
+
+  const [title, setTitle] = useState(expense?.title ?? '')
+  const [amount, setAmount] = useState(expense ? String(expense.amount) : '')
+  const [category, setCategory] = useState<ExpenseCategory | ''>(expense?.category ?? '')
+  const [date, setDate] = useState(expense?.date ?? today)
   const [errors, setErrors] = useState<FieldErrors>({})
   const titleRef = useRef<HTMLInputElement>(null)
 
@@ -93,8 +97,8 @@ function ExpenseForm({ onAddExpense, onCancel }: ExpenseFormProps) {
       return
     }
 
-    onAddExpense({
-      id: createId(),
+    onSubmitExpense({
+      id: expense?.id ?? createId(),
       title: title.trim(),
       amount: Number(amount),
       category: category as ExpenseCategory,
@@ -108,7 +112,7 @@ function ExpenseForm({ onAddExpense, onCancel }: ExpenseFormProps) {
     <section className="card panel expense-form" aria-labelledby="expense-form-heading">
       <div className="panel__header">
         <h2 id="expense-form-heading" className="panel__title">
-          Add Expense
+          {isEditMode ? 'Edit Expense' : 'Add Expense'}
         </h2>
       </div>
 
@@ -214,7 +218,7 @@ function ExpenseForm({ onAddExpense, onCancel }: ExpenseFormProps) {
 
         <div className="expense-form__actions">
           <button type="submit" className="button button--primary">
-            Add Expense
+            {isEditMode ? 'Update Expense' : 'Add Expense'}
           </button>
           <button type="button" className="button button--secondary" onClick={handleCancel}>
             Cancel

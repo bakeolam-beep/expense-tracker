@@ -5,12 +5,34 @@ import './App.css'
 
 function App() {
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
 
-  function handleAddExpense(expense: Expense) {
+  function handleSubmitExpense(expense: Expense) {
+    if (editingExpense) {
+      setExpenses((previous) =>
+        previous.map((item) => (item.id === expense.id ? expense : item)),
+      )
+      setEditingExpense(null)
+      return
+    }
+
     setExpenses((previous) => [...previous, expense])
   }
 
-  return <Dashboard expenses={expenses} onAddExpense={handleAddExpense} />
+  function handleDeleteExpense(id: string) {
+    setExpenses((previous) => previous.filter((expense) => expense.id !== id))
+    setEditingExpense((current) => (current?.id === id ? null : current))
+  }
+
+  return (
+    <Dashboard
+      expenses={expenses}
+      editingExpense={editingExpense}
+      onStartEditing={setEditingExpense}
+      onSubmitExpense={handleSubmitExpense}
+      onDeleteExpense={handleDeleteExpense}
+    />
+  )
 }
 
 export default App
